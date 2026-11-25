@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' - Online Quiz System'">Online Quiz System</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header th:fragment="navbar(user)" class="navbar">
+    <span class="brand">Online Quiz System</span>
+    <span class="nav-right" th:if="${user != null}">
+        <span th:text="${user.name} + ' (' + ${user.role} + ')'">Name (ROLE)</span>
+        <form th:action="@{/logout}" method="post" class="inline">
+            <button type="submit" class="btn btn-light">Log out</button>
+        </form>
+    </span>
+</header>
+</body>
+</html>

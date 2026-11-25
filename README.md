@@ -17,6 +17,8 @@ The app uses the `quizdb` database (it is created automatically). The default us
   ```properties
   spring.datasource.username=root
   spring.datasource.password=yourPassword
+  # optional: if port 8080 is already used on your machine (e.g. by XAMPP/Apache)
+  server.port=8081
   ```
 
 ## Commands

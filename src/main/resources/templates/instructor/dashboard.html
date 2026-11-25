@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Instructor dashboard')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card">
+    <h1>Instructor dashboard</h1>
+    <p>Welcome, <strong th:text="${user.name}">Instructor</strong>.</p>
+    <p class="muted">Your quizzes and reports will appear here.</p>
+</main>
+</body>
+</html>

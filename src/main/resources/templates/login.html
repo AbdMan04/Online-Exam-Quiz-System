@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Online Quiz System - Login</title>
-</head>
+<head th:replace="~{fragments/layout :: head('Log in')}"></head>
 <body>
-<main>
-    <h1>Online Quiz System</h1>
-    <form method="post" action="/login">
-        <label>Email <input type="email" name="email" required></label>
-        <label>Password <input type="password" name="password" required></label>
-        <button type="submit">Log in</button>
+<header th:replace="~{fragments/layout :: navbar(null)}"></header>
+<main class="card narrow">
+    <h1>Log in</h1>
+    <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+    <form th:action="@{/login}" method="post">
+        <label>Email
+            <input type="email" name="email" th:value="${email}" required autofocus>
+        </label>
+        <label>Password
+            <input type="password" name="password" required>
+        </label>
+        <button type="submit" class="btn">Log in</button>
     </form>
-    <p th:if="${error}" th:text="${error}"></p>
-    <p>No account? <a href="/register">Register</a></p>
+    <p class="muted">No account? <a th:href="@{/register}">Register</a></p>
 </main>
 </body>
 </html>
