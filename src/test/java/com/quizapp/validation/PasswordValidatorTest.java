@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@DisplayName("R2 - Password validation")
+@DisplayName("PasswordValidator (unit tests)")
 class PasswordValidatorTest {
 
     /** Builds a password of the given length that contains a letter and a digit. */
@@ -27,7 +27,7 @@ class PasswordValidatorTest {
 
     @Nested
     @Tag("blackbox")
-    @DisplayName("Table 2-1: Equivalence partitions")
+    @DisplayName("Partitions")
     class EquivalencePartitions {
 
         @Test
@@ -54,7 +54,7 @@ class PasswordValidatorTest {
 
     @Nested
     @Tag("blackbox")
-    @DisplayName("Table 2-2: Boundary value analysis")
+    @DisplayName("Length boundaries")
     class BoundaryValues {
 
         @ParameterizedTest(name = "length {0} -> valid = {1}")
@@ -73,7 +73,7 @@ class PasswordValidatorTest {
 
     @Nested
     @Tag("whitebox")
-    @DisplayName("Table 2-3/2-4: Statement and branch coverage")
+    @DisplayName("Each branch of isValid()")
     class Branches {
 
         @Test
