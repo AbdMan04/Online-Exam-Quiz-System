@@ -52,8 +52,4 @@ public class AnswerOption {
     public boolean isCorrect() {
         return correct;
     }
-
-    public Question getQuestion() {
-        return question;
-    }
 }
