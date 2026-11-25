@@ -48,14 +48,6 @@ public class AttemptAnswer {
         this.selectedOption = option;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public Attempt getAttempt() {
-        return attempt;
-    }
-
     public Question getQuestion() {
         return question;
     }

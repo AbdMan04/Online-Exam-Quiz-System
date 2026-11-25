@@ -17,7 +17,6 @@ import jakarta.persistence.Table;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -132,9 +131,5 @@ public class Attempt {
 
     public AttemptStatus getStatus() {
         return status;
-    }
-
-    public List<AttemptAnswer> getAnswers() {
-        return Collections.unmodifiableList(answers);
     }
 }
