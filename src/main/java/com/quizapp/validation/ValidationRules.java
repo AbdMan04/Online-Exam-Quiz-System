@@ -28,6 +28,9 @@ public final class ValidationRules {
     public static final int OPTIONS_MAX = 5;
     public static final int REQUIRED_CORRECT_OPTIONS = 1;
 
+    public static final int QUESTION_TEXT_MAX_LENGTH = 500;
+    public static final int OPTION_TEXT_MAX_LENGTH = 300;
+
     public static final int POINTS_MIN = 1;
     public static final int POINTS_MAX = 10;
 

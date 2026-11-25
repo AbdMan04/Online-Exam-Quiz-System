@@ -18,6 +18,8 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 | Max attempts | 1–5 | 0, 1, 5, 6 |
 | Options per question | 2–5, exactly 1 correct | 1, 2, 5, 6 options; 0, 1, 2 correct |
 | Question points | 1–10 | 0, 1, 10, 11 |
+| Question text length | 1–500 characters (after trimming) | 0, 1, 500, 501 |
+| Option text length | 1–300 characters (after trimming) | 300, 301 |
 | Failed logins before lock | 3 | 2nd failure (still open), 3rd failure (locked) |
 
 ## 2. Message catalogue (exact strings; tests assert on these)
@@ -56,7 +58,7 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 - **R4**: A wrong email or wrong password gives the same message (`Invalid email or password`). A successful login resets the failed-login counter to 0. STUDENT → student dashboard, INSTRUCTOR → instructor dashboard.
 - **R5**: The 3rd consecutive wrong password locks the account. A locked account rejects even the correct password with `Account locked`.
 - **R6–R9**: Validation order is title → duration → passing score → max attempts. The first failure is reported. A missing number counts as out of range. A new quiz always starts as `DRAFT`. An instructor can only see and change their own quizzes (otherwise `Quiz not found`).
-- **R10/R11**: A question is valid when its text is not blank, points are 1–10, it has 2–5 options with non-blank text, and exactly 1 option is correct. Anything else gives `Invalid question configuration`.
+- **R10/R11**: A question is valid when its text is 1–500 characters (not blank), points are 1–10, it has 2–5 options whose text is 1–300 characters (not blank), and exactly 1 option is correct. Anything else gives `Invalid question configuration`.
 - **R12**: Publishing an already-PUBLISHED quiz is rejected with `Quiz is already published`. A PUBLISHED quiz cannot lose its last question (`Quiz needs at least 1 question`).
 - **R13**: Questions can be added, edited or deleted (DRAFT or PUBLISHED) until the first attempt exists. After that every change is rejected with `Quiz cannot be modified after attempts exist`. This check runs before question validation.
 - **R14**: Allowed when `attemptsUsed < maxAttempts`. `attemptsUsed` counts all of the student's attempts on that quiz (in progress and submitted). The attempt stores `startTime` from the system clock. If the student already has an unexpired attempt in progress, "start" resumes it instead of creating a new one.

@@ -10,7 +10,8 @@ import java.util.List;
 import static com.quizapp.validation.ValidationRules.inRange;
 
 /**
- * R11: a question needs non-blank text, 1-10 points, 2-5 non-blank options and exactly 1 correct option.
+ * R11: a question needs text of 1-500 characters, 1-10 points, 2-5 options with text of 1-300 characters,
+ * and exactly 1 correct option.
  */
 public final class QuestionValidator {
 
@@ -24,7 +25,7 @@ public final class QuestionValidator {
     }
 
     public static boolean isValid(QuestionInput input) {
-        if (input == null || isBlank(input.text())) {
+        if (input == null || !hasValidText(input.text(), ValidationRules.QUESTION_TEXT_MAX_LENGTH)) {
             return false;
         }
         if (!inRange(input.points(), ValidationRules.POINTS_MIN, ValidationRules.POINTS_MAX)) {
@@ -34,7 +35,7 @@ public final class QuestionValidator {
         if (options == null || !inRange(options.size(), ValidationRules.OPTIONS_MIN, ValidationRules.OPTIONS_MAX)) {
             return false;
         }
-        if (options.stream().anyMatch(option -> isBlank(option.text()))) {
+        if (options.stream().anyMatch(option -> !hasValidText(option.text(), ValidationRules.OPTION_TEXT_MAX_LENGTH))) {
             return false;
         }
         return countCorrect(options) == ValidationRules.REQUIRED_CORRECT_OPTIONS;
@@ -44,7 +45,8 @@ public final class QuestionValidator {
         return options.stream().filter(OptionInput::correct).count();
     }
 
-    private static boolean isBlank(String text) {
-        return text == null || text.isBlank();
+    /** Not blank, and at most {@code maxLength} characters after trimming (texts are stored trimmed). */
+    private static boolean hasValidText(String text, int maxLength) {
+        return text != null && !text.isBlank() && text.trim().length() <= maxLength;
     }
 }
