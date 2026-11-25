@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Online Quiz System - Login</title>
+</head>
+<body>
+<main>
+    <h1>Online Quiz System</h1>
+    <form method="post" action="/login">
+        <label>Email <input type="email" name="email" required></label>
+        <label>Password <input type="password" name="password" required></label>
+        <button type="submit">Log in</button>
+    </form>
+    <p th:if="${error}" th:text="${error}"></p>
+    <p>No account? <a href="/register">Register</a></p>
+</main>
+</body>
+</html>
