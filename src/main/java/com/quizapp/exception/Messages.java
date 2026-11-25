@@ -8,6 +8,7 @@ public final class Messages {
 
     public static final String REGISTER_OK = "Registration successful";
     public static final String NAME_REQUIRED = "Name is required";
+    public static final String NAME_TOO_LONG = "Name must be at most 100 characters";
     public static final String INVALID_EMAIL = "Invalid email";
     public static final String INVALID_PASSWORD = "Password must be 8-20 characters with a letter and a digit";
     public static final String EMAIL_TAKEN = "Email already registered";

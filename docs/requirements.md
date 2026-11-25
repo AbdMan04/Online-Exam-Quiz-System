@@ -5,15 +5,19 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 
 ## 1. Validation rules (used for EP and BVA)
 
-| Item | Valid range | BVA values to test |
+2-BVA is used: for a range [min, max] the values min−1, min, max, max+1 are tested.
+
+| Item | Valid range | 2-BVA values to test |
 |---|---|---|
-| Password length | 8–20, at least 1 letter **and** 1 digit | 7, 8, 9, 19, 20, 21 |
-| Quiz title length | 3–100 characters (after trimming) | 2, 3, 4, 99, 100, 101 |
-| Quiz duration | 5–180 minutes | 4, 5, 6, 179, 180, 181 |
-| Passing score | 0–100 % | -1, 0, 1, 99, 100, 101 |
-| Max attempts | 1–5 | 0, 1, 2, 4, 5, 6 |
-| Options per question | 2–5, exactly 1 correct | 1, 2, 3, 4, 5, 6 options; 0 / 1 / 2 correct |
-| Question points | 1–10 | 0, 1, 2, 9, 10, 11 |
+| Name length | 1–100 characters (after trimming) | 0, 1, 100, 101 |
+| Email length | at most 100 characters, domain extension ≥ 2 letters | 100, 101; extension 1, 2 |
+| Password length | 8–20, at least 1 letter **and** 1 digit | 7, 8, 20, 21; letters 0, 1; digits 0, 1 |
+| Quiz title length | 3–100 characters (after trimming) | 2, 3, 100, 101 |
+| Quiz duration | 5–180 minutes | 4, 5, 180, 181 |
+| Passing score | 0–100 % | -1, 0, 100, 101 |
+| Max attempts | 1–5 | 0, 1, 5, 6 |
+| Options per question | 2–5, exactly 1 correct | 1, 2, 5, 6 options; 0, 1, 2 correct |
+| Question points | 1–10 | 0, 1, 10, 11 |
 | Failed logins before lock | 3 | 2nd failure (still open), 3rd failure (locked) |
 
 ## 2. Message catalogue (exact strings; tests assert on these)
@@ -22,6 +26,7 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 |---|---|---|
 | REGISTER_OK | `Registration successful` | R1 |
 | NAME_REQUIRED | `Name is required` | R1 |
+| NAME_TOO_LONG | `Name must be at most 100 characters` | R1 |
 | INVALID_EMAIL | `Invalid email` | R1 |
 | INVALID_PASSWORD | `Password must be 8-20 characters with a letter and a digit` | R2 |
 | EMAIL_TAKEN | `Email already registered` | R3 |
@@ -45,7 +50,7 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 
 ## 3. Clarifications (decisions that make the requirements testable)
 
-- **R1**: Name must not be blank. Email must match `local@domain.tld`. Emails are compared case-insensitively and stored in lower case. New accounts always get role `STUDENT`. Instructors are seeded.
+- **R1**: Name must not be blank and is at most 100 characters after trimming. Email must match `local@domain.tld` (domain extension of at least 2 letters) and is at most 100 characters. Emails are compared case-insensitively and stored in lower case. New accounts always get role `STUDENT`. Instructors are seeded.
 - **R2**: Length is checked first, then the letter and digit rule. `12345678` (no letter) and `abcdefgh` (no digit) are both invalid. A `null` password is invalid.
 - **R3**: The check runs after R1/R2 validation succeeds.
 - **R4**: A wrong email or wrong password gives the same message (`Invalid email or password`). A successful login resets the failed-login counter to 0. STUDENT → student dashboard, INSTRUCTOR → instructor dashboard.

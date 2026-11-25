@@ -23,14 +23,23 @@ public final class AccountValidator {
         PasswordValidator.validate(password);
     }
 
+    /** R1: the trimmed name must be 1-100 characters. */
     public static void validateName(String name) {
         if (name == null || name.isBlank()) {
             throw new BusinessException(Messages.NAME_REQUIRED);
         }
+        if (name.trim().length() > ValidationRules.NAME_MAX_LENGTH) {
+            throw new BusinessException(Messages.NAME_TOO_LONG);
+        }
     }
 
+    /** R1: the trimmed email must match local@domain.tld and be at most 100 characters. */
     public static void validateEmail(String email) {
-        if (email == null || !EMAIL_PATTERN.matcher(email.trim()).matches()) {
+        if (email == null) {
+            throw new BusinessException(Messages.INVALID_EMAIL);
+        }
+        String trimmed = email.trim();
+        if (trimmed.length() > ValidationRules.EMAIL_MAX_LENGTH || !EMAIL_PATTERN.matcher(trimmed).matches()) {
             throw new BusinessException(Messages.INVALID_EMAIL);
         }
     }
