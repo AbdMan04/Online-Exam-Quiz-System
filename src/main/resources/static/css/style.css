@@ -153,3 +153,18 @@ legend { font-weight: 500; padding: 0 4px; }
 .answer input[type="radio"] { width: auto; margin: 0; }
 .save-status { min-height: 1.2em; color: var(--success-text); font-size: 0.9rem; }
 .save-status.error { color: var(--error-text); }
+
+/* ---- results and report (R18-R20) ---- */
+.badge-red { background: var(--error-bg); color: var(--error-text); }
+.result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    margin: 16px 0;
+    padding: 16px 20px;
+    border-radius: 8px;
+}
+.result-pass { background: var(--success-bg); color: var(--success-text); }
+.result-fail { background: var(--error-bg); color: var(--error-text); }
+.result-label { display: block; font-size: 0.8rem; opacity: 0.8; }
+.result strong { font-size: 1.4rem; }

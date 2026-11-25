@@ -5,6 +5,7 @@ import com.quizapp.exception.Messages;
 import com.quizapp.model.Question;
 import com.quizapp.model.Quiz;
 import com.quizapp.service.QuizService;
+import com.quizapp.service.ReportService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,7 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 /**
- * Instructor pages for R6-R13. Every rule lives in {@link QuizService}; this class only maps
+ * Instructor pages for R6-R13 and the R20 report. Rules live in the services; this class only maps
  * requests to service calls and shows the resulting message.
  */
 @Controller
@@ -31,9 +32,11 @@ public class InstructorController {
     private static final String QUESTION_FORM = "instructor/question-form";
 
     private final QuizService quizService;
+    private final ReportService reportService;
 
-    public InstructorController(QuizService quizService) {
+    public InstructorController(QuizService quizService, ReportService reportService) {
         this.quizService = quizService;
+        this.reportService = reportService;
     }
 
     @ModelAttribute("user")
@@ -78,6 +81,13 @@ public class InstructorController {
         model.addAttribute("quiz", quizService.getQuiz(quizId, user.id()));
         model.addAttribute("locked", quizService.hasAttempts(quizId));
         return "instructor/quiz-detail";
+    }
+
+    /** R20 */
+    @GetMapping("/quizzes/{quizId}/report")
+    public String report(@ModelAttribute("user") SessionUser user, @PathVariable Long quizId, Model model) {
+        model.addAttribute("report", reportService.quizReport(quizId, user.id()));
+        return "instructor/report";
     }
 
     @PostMapping("/quizzes/{quizId}/publish")

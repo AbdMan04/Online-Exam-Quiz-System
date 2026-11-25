@@ -95,6 +95,14 @@ public class Attempt {
                         () -> answers.add(new AttemptAnswer(this, question, option)));
     }
 
+    /** R18: points of the questions answered with the correct option. */
+    public int getEarnedPoints() {
+        return answers.stream()
+                .filter(answer -> answer.getSelectedOption().isCorrect())
+                .mapToInt(answer -> answer.getQuestion().getPoints())
+                .sum();
+    }
+
     /** Question id -> selected option id, for showing the student's saved choices. */
     public Map<Long, Long> getSelectedOptionIds() {
         return answers.stream().collect(Collectors.toMap(

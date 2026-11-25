@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Report')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card" th:with="quiz=${report.quiz}">
+    <p><a th:href="@{/instructor/quizzes/{id}(id=${quiz.id})}" th:text="'← ' + ${quiz.title}">← Quiz</a></p>
+    <h1>Results report</h1>
+
+    <dl class="facts">
+        <div><dt>Students</dt><dd id="student-count" th:text="${#lists.size(report.students)}">0</dd></div>
+        <div><dt>Class average (best scores)</dt>
+            <dd id="class-average" th:text="${report.classAverage} + ' %'">0.00 %</dd></div>
+        <div><dt>Passed</dt>
+            <dd id="passed" th:text="${report.passedCount()} + ' of ' + ${#lists.size(report.students)}">0 of 0</dd></div>
+        <div><dt>Passing score</dt><dd th:text="${quiz.passingScore} + ' %'">60 %</dd></div>
+    </dl>
+
+    <p class="muted" th:if="${#lists.isEmpty(report.students)}">No submitted attempts yet.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(report.students)}" id="results">
+        <thead>
+        <tr>
+            <th>Student</th>
+            <th>Email</th>
+            <th>Submitted attempts</th>
+            <th>Best score</th>
+            <th>Result</th>
+            <th>Grade</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${report.students}">
+            <td th:text="${row.studentName}">Alice Smith</td>
+            <td th:text="${row.studentEmail}">alice@uni.edu</td>
+            <td th:text="${row.submittedAttempts}">2</td>
+            <td th:text="${row.bestScore} + ' %'">75.00 %</td>
+            <td><span class="badge" th:classappend="${row.outcome.name() == 'PASS'} ? 'badge-green' : 'badge-red'"
+                      th:text="${row.outcome}">PASS</span></td>
+            <td th:text="${row.letterGrade}">C</td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

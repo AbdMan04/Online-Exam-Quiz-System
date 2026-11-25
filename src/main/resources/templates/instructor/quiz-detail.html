@@ -15,6 +15,8 @@
               method="post" class="inline">
             <button type="submit" class="btn">Publish</button>
         </form>
+        <a th:if="${quiz.published}" class="btn" th:href="@{/instructor/quizzes/{id}/report(id=${quiz.id})}">
+            View report</a>
     </div>
 
     <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>

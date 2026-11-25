@@ -40,11 +40,22 @@
         </form>
     </section>
 
-    <!-- Submitted attempt (results are added with R18-R19) -->
+    <!-- Submitted attempt with its result (R18-R19) -->
     <section th:unless="${attempt.inProgress}" id="submitted">
         <h1 th:text="${quiz.title}">Java Basics</h1>
-        <p><span class="badge badge-green" id="status" th:text="${attempt.status}">SUBMITTED</span></p>
+        <p><span class="badge badge-grey" id="status" th:text="${attempt.status}">SUBMITTED</span></p>
+        <div class="result" th:classappend="${result.outcome.name() == 'PASS'} ? 'result-pass' : 'result-fail'">
+            <div><span class="result-label">Score</span>
+                <strong id="score" th:text="${result.score} + ' %'">75.00 %</strong></div>
+            <div><span class="result-label">Result</span>
+                <strong id="outcome" th:text="${result.outcome}">PASS</strong></div>
+            <div><span class="result-label">Grade</span>
+                <strong id="grade" th:text="${result.letterGrade}">C</strong></div>
+        </div>
         <dl class="facts">
+            <div><dt>Points</dt>
+                <dd th:text="${attempt.earnedPoints} + ' / ' + ${quiz.totalPoints}">15 / 20</dd></div>
+            <div><dt>Passing score</dt><dd th:text="${quiz.passingScore} + ' %'">60 %</dd></div>
             <div><dt>Started</dt><dd th:text="${#temporals.format(attempt.startedAt, 'yyyy-MM-dd HH:mm')}">-</dd></div>
             <div><dt>Submitted</dt><dd th:text="${#temporals.format(attempt.submittedAt, 'yyyy-MM-dd HH:mm')}">-</dd></div>
             <div><dt>Answered</dt>

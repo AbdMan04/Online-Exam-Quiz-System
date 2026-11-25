@@ -4,6 +4,7 @@ import com.quizapp.exception.BusinessException;
 import com.quizapp.exception.Messages;
 import com.quizapp.model.Attempt;
 import com.quizapp.service.AttemptService;
+import com.quizapp.service.GradingService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,11 @@ public class StudentController {
     private static final String DASHBOARD = "redirect:/student/dashboard";
 
     private final AttemptService attemptService;
+    private final GradingService gradingService;
 
-    public StudentController(AttemptService attemptService) {
+    public StudentController(AttemptService attemptService, GradingService gradingService) {
         this.attemptService = attemptService;
+        this.gradingService = gradingService;
     }
 
     @ModelAttribute("user")
@@ -69,6 +72,9 @@ public class StudentController {
         model.addAttribute("quiz", attempt.getQuiz());
         model.addAttribute("selected", attempt.getSelectedOptionIds());
         model.addAttribute("remainingSeconds", attemptService.remainingSeconds(attempt));
+        if (!attempt.isInProgress()) {
+            model.addAttribute("result", gradingService.grade(attempt)); // R18-R19
+        }
         return "student/attempt";
     }
 
