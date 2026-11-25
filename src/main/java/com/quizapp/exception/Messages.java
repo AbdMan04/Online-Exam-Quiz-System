@@ -34,6 +34,9 @@ public final class Messages {
     public static final String NO_ATTEMPTS_LEFT = "No attempts remaining";
     public static final String QUIZ_NOT_AVAILABLE = "Quiz not available";
     public static final String TIME_EXPIRED = "Time is up - attempt already submitted";
+    public static final String ATTEMPT_NOT_FOUND = "Attempt not found";
+    public static final String INVALID_ANSWER = "Invalid answer";
+    public static final String ATTEMPT_SUBMITTED = "Attempt submitted";
 
     private Messages() {
     }

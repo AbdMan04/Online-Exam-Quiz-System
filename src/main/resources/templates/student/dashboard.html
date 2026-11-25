@@ -4,9 +4,41 @@
 <body>
 <header th:replace="~{fragments/layout :: navbar(${user})}"></header>
 <main class="card">
-    <h1>Student dashboard</h1>
-    <p>Welcome, <strong th:text="${user.name}">Student</strong>.</p>
-    <p class="muted">Available quizzes and your results will appear here.</p>
+    <h1>Available quizzes</h1>
+    <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+
+    <p class="muted" th:if="${#lists.isEmpty(quizzes)}">No quizzes are available right now.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(quizzes)}">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Questions</th>
+            <th>Duration</th>
+            <th>Passing score</th>
+            <th>Attempts used</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${quizzes}">
+            <td th:text="${row.quiz.title}">Java Basics</td>
+            <td th:text="${row.quiz.questionCount}">5</td>
+            <td th:text="${row.quiz.durationMinutes} + ' min'">30 min</td>
+            <td th:text="${row.quiz.passingScore} + ' %'">60 %</td>
+            <td th:text="${row.attemptsUsed} + ' / ' + ${row.quiz.maxAttempts}">0 / 2</td>
+            <td>
+                <form th:if="${row.canStart()}" th:action="@{/student/quizzes/{id}/start(id=${row.quiz.id})}"
+                      method="post" class="inline">
+                    <button type="submit" class="btn btn-small"
+                            th:text="${row.openAttemptId != null} ? 'Resume' : 'Start'">Start</button>
+                </form>
+                <span th:unless="${row.canStart()}" class="muted">No attempts left</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 </body>
 </html>

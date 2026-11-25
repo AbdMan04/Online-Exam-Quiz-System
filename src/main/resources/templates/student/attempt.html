@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${quiz.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card">
+    <p><a th:href="@{/student/dashboard}">&larr; Available quizzes</a></p>
+    <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>
+
+    <!-- R14/R17: attempt in progress, with timer and auto-saved answers -->
+    <section th:if="${attempt.inProgress}" id="attempt"
+             th:data-answer-url="@{/student/attempts/{id}/answers(id=${attempt.id})}"
+             th:data-remaining-seconds="${remainingSeconds}">
+        <div class="title-row sticky">
+            <h1 th:text="${quiz.title}">Java Basics</h1>
+            <div class="timer">Time left: <strong id="timer">--:--</strong></div>
+        </div>
+        <p class="muted">Answers are saved as soon as you choose them. When the time is up the attempt is
+            submitted automatically.</p>
+        <p id="save-status" class="save-status" aria-live="polite"></p>
+
+        <ol class="questions">
+            <li th:each="question : ${quiz.questions}" class="question">
+                <div class="question-head">
+                    <strong th:text="${question.text}">What is the JVM?</strong>
+                    <span class="muted" th:text="${question.points} + ' pt'">5 pt</span>
+                </div>
+                <label class="answer" th:each="option : ${question.options}">
+                    <input type="radio" th:name="'question-' + ${question.id}" th:value="${option.id}"
+                           th:data-question-id="${question.id}"
+                           th:checked="${selected[question.id] == option.id}">
+                    <span th:text="${option.text}">Option</span>
+                </label>
+            </li>
+        </ol>
+
+        <form id="submit-form" th:action="@{/student/attempts/{id}/submit(id=${attempt.id})}" method="post"
+              onsubmit="return this.dataset.auto === 'true' || confirm('Submit your attempt now?');">
+            <button type="submit" class="btn">Submit attempt</button>
+        </form>
+    </section>
+
+    <!-- Submitted attempt (results are added with R18-R19) -->
+    <section th:unless="${attempt.inProgress}" id="submitted">
+        <h1 th:text="${quiz.title}">Java Basics</h1>
+        <p><span class="badge badge-green" id="status" th:text="${attempt.status}">SUBMITTED</span></p>
+        <dl class="facts">
+            <div><dt>Started</dt><dd th:text="${#temporals.format(attempt.startedAt, 'yyyy-MM-dd HH:mm')}">-</dd></div>
+            <div><dt>Submitted</dt><dd th:text="${#temporals.format(attempt.submittedAt, 'yyyy-MM-dd HH:mm')}">-</dd></div>
+            <div><dt>Answered</dt>
+                <dd id="answered" th:text="${#maps.size(selected)} + ' of ' + ${quiz.questionCount}">0 of 0</dd></div>
+        </dl>
+    </section>
+</main>
+<script th:if="${attempt.inProgress}" th:src="@{/js/attempt.js}"></script>
+</body>
+</html>

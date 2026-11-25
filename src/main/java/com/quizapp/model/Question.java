@@ -16,6 +16,8 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "questions")
@@ -62,6 +64,10 @@ public class Question {
 
     void attachTo(Quiz quiz) {
         this.quiz = quiz;
+    }
+
+    public Optional<AnswerOption> findOption(Long optionId) {
+        return options.stream().filter(option -> Objects.equals(option.getId(), optionId)).findFirst();
     }
 
     public Long getId() {

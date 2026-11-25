@@ -18,6 +18,8 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 @Table(name = "quizzes")
@@ -86,6 +88,10 @@ public class Quiz {
 
     public int getTotalPoints() {
         return questions.stream().mapToInt(Question::getPoints).sum();
+    }
+
+    public Optional<Question> findQuestion(Long questionId) {
+        return questions.stream().filter(question -> Objects.equals(question.getId(), questionId)).findFirst();
     }
 
     public boolean isOwnedBy(Long instructorId) {

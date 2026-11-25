@@ -40,6 +40,8 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 | QUIZ_ALREADY_PUBLISHED | `Quiz is already published` | R12 |
 | QUIZ_NOT_FOUND | `Quiz not found` | R6–R13 (missing or another instructor's quiz) |
 | QUESTION_NOT_FOUND | `Question not found` | R10–R13 |
+| ATTEMPT_NOT_FOUND | `Attempt not found` | R14–R17 (missing or another student's attempt) |
+| INVALID_ANSWER | `Invalid answer` | R17 (question/option not part of this quiz) |
 
 ## 3. Clarifications (decisions that make the requirements testable)
 
@@ -52,8 +54,9 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 - **R10/R11**: A question is valid when its text is not blank, points are 1–10, it has 2–5 options with non-blank text, and exactly 1 option is correct. Anything else gives `Invalid question configuration`.
 - **R12**: Publishing an already-PUBLISHED quiz is rejected with `Quiz is already published`. A PUBLISHED quiz cannot lose its last question (`Quiz needs at least 1 question`).
 - **R13**: Questions can be added, edited or deleted (DRAFT or PUBLISHED) until the first attempt exists. After that every change is rejected with `Quiz cannot be modified after attempts exist`. This check runs before question validation.
-- **R14**: Allowed when `attemptsUsed < maxAttempts`. The attempt stores `startTime` from the system clock.
-- **R17**: An attempt is expired when `now >= startTime + duration` (exactly at the limit counts as expired). On expiry it is auto-submitted with the answers saved so far. Later answers are rejected with `Time is up - attempt already submitted`.
+- **R14**: Allowed when `attemptsUsed < maxAttempts`. `attemptsUsed` counts all of the student's attempts on that quiz (in progress and submitted). The attempt stores `startTime` from the system clock. If the student already has an unexpired attempt in progress, "start" resumes it instead of creating a new one.
+- **R15/R16**: Check order is quiz published (R16), then resume an open attempt, then the attempt limit (R15). A quiz that does not exist is also `Quiz not available`.
+- **R17**: An attempt is expired when `now >= startTime + duration` (exactly at the limit counts as expired). Each answer is saved as soon as it is chosen. Expiry is checked whenever the attempt is used (opened, answered, submitted, or the quiz is started again). An expired attempt is auto-submitted with the answers saved so far, and its submit time is set to the deadline. Answers to a submitted attempt are rejected with `Time is up - attempt already submitted`. A question or option that does not belong to the attempt's quiz gives `Invalid answer`. A student can only use their own attempts (otherwise `Attempt not found`).
 - **R18**: `score = earnedPoints / totalPoints × 100`, rounded half-up to 2 decimals. Unanswered questions earn 0.
 - **R19**: `PASS` if `score >= passingScore`, else `FAIL`. Letter grade from the rounded score: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, otherwise F. BVA: 59.99 / 60, 69.99 / 70, 79.99 / 80, 89.99 / 90, plus 0 and 100.
 - **R20**: A student's reported score is their highest attempt. Class average = mean of the students' best scores, rounded to 2 decimals. With no attempts the average is 0.
@@ -222,6 +225,6 @@ And the class average is calculated from all students' best scores
 | R6–R9 | `QuizService.createQuiz`, `QuizValidator.validate` |
 | R10–R11 | `QuizService.addQuestion`, `QuestionValidator.validate` |
 | R12–R13 | `QuizService.publish`, `QuizService.editQuestion`, `QuizService.deleteQuestion` |
-| R14–R17 | `AttemptService.start`, `AttemptService.submitAnswer`, `AttemptService.checkExpiry` |
+| R14–R17 | `AttemptService.start`, `AttemptService.submitAnswer`, `AttemptService.submit`, `AttemptService.checkExpiry` |
 | R18–R19 | `GradingService.calculateScore`, `GradingService.passFail`, `GradingService.letterGrade` |
 | R20 | `ReportService.bestScore`, `ReportService.classAverage` |
