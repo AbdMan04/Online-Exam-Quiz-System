@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Create quiz')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card narrow">
+    <p><a th:href="@{/instructor/dashboard}">&larr; My quizzes</a></p>
+    <h1>Create quiz</h1>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+    <form th:action="@{/instructor/quizzes}" th:object="${quizForm}" method="post">
+        <label>Title
+            <input type="text" th:field="*{title}" required autofocus>
+            <small class="muted">3-100 characters.</small>
+        </label>
+        <label>Duration (minutes)
+            <input type="number" th:field="*{durationMinutes}" required>
+            <small class="muted">5-180 minutes.</small>
+        </label>
+        <label>Passing score (%)
+            <input type="number" th:field="*{passingScore}" required>
+            <small class="muted">0-100.</small>
+        </label>
+        <label>Max attempts
+            <input type="number" th:field="*{maxAttempts}" required>
+            <small class="muted">1-5 attempts per student.</small>
+        </label>
+        <button type="submit" class="btn">Save quiz</button>
+    </form>
+</main>
+</body>
+</html>

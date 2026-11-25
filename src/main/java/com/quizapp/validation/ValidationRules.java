@@ -32,4 +32,9 @@ public final class ValidationRules {
 
     private ValidationRules() {
     }
+
+    /** True when the value is present and inside the inclusive range [min, max]. */
+    public static boolean inRange(Integer value, int min, int max) {
+        return value != null && value >= min && value <= max;
+    }
 }

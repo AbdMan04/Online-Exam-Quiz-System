@@ -4,9 +4,40 @@
 <body>
 <header th:replace="~{fragments/layout :: navbar(${user})}"></header>
 <main class="card">
-    <h1>Instructor dashboard</h1>
-    <p>Welcome, <strong th:text="${user.name}">Instructor</strong>.</p>
-    <p class="muted">Your quizzes and reports will appear here.</p>
+    <div class="title-row">
+        <h1>My quizzes</h1>
+        <a class="btn" th:href="@{/instructor/quizzes/new}">+ Create quiz</a>
+    </div>
+    <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+
+    <p class="muted" th:if="${#lists.isEmpty(quizzes)}">You have not created any quizzes yet.</p>
+
+    <table class="table" th:unless="${#lists.isEmpty(quizzes)}">
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Questions</th>
+            <th>Duration</th>
+            <th>Passing score</th>
+            <th>Max attempts</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="quiz : ${quizzes}">
+            <td th:text="${quiz.title}">Java Basics</td>
+            <td><span class="badge" th:classappend="${quiz.published} ? 'badge-green' : 'badge-grey'"
+                      th:text="${quiz.status}">DRAFT</span></td>
+            <td th:text="${quiz.questionCount}">0</td>
+            <td th:text="${quiz.durationMinutes} + ' min'">30 min</td>
+            <td th:text="${quiz.passingScore} + ' %'">60 %</td>
+            <td th:text="${quiz.maxAttempts}">2</td>
+            <td><a th:href="@{/instructor/quizzes/{id}(id=${quiz.id})}">Manage</a></td>
+        </tr>
+        </tbody>
+    </table>
 </main>
 </body>
 </html>

@@ -37,6 +37,9 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 | NO_ATTEMPTS_LEFT | `No attempts remaining` | R15 |
 | QUIZ_NOT_AVAILABLE | `Quiz not available` | R16 |
 | TIME_EXPIRED | `Time is up - attempt already submitted` | R17 |
+| QUIZ_ALREADY_PUBLISHED | `Quiz is already published` | R12 |
+| QUIZ_NOT_FOUND | `Quiz not found` | R6–R13 (missing or another instructor's quiz) |
+| QUESTION_NOT_FOUND | `Question not found` | R10–R13 |
 
 ## 3. Clarifications (decisions that make the requirements testable)
 
@@ -45,10 +48,10 @@ If a rule or message changes, change it here **and** in `ValidationRules` / `Mes
 - **R3**: The check runs after R1/R2 validation succeeds.
 - **R4**: A wrong email or wrong password gives the same message (`Invalid email or password`). A successful login resets the failed-login counter to 0. STUDENT → student dashboard, INSTRUCTOR → instructor dashboard.
 - **R5**: The 3rd consecutive wrong password locks the account. A locked account rejects even the correct password with `Account locked`.
-- **R6–R9**: Validation order is title → duration → passing score → max attempts. The first failure is reported. A new quiz always starts as `DRAFT`.
-- **R10/R11**: Questions can only be added while the quiz is `DRAFT`. Points outside 1–10 are also an `Invalid question configuration`.
-- **R12**: Publishing an already-PUBLISHED quiz is rejected with `Quiz not available`.
-- **R13**: Once at least one attempt exists, adding, editing or deleting questions is rejected.
+- **R6–R9**: Validation order is title → duration → passing score → max attempts. The first failure is reported. A missing number counts as out of range. A new quiz always starts as `DRAFT`. An instructor can only see and change their own quizzes (otherwise `Quiz not found`).
+- **R10/R11**: A question is valid when its text is not blank, points are 1–10, it has 2–5 options with non-blank text, and exactly 1 option is correct. Anything else gives `Invalid question configuration`.
+- **R12**: Publishing an already-PUBLISHED quiz is rejected with `Quiz is already published`. A PUBLISHED quiz cannot lose its last question (`Quiz needs at least 1 question`).
+- **R13**: Questions can be added, edited or deleted (DRAFT or PUBLISHED) until the first attempt exists. After that every change is rejected with `Quiz cannot be modified after attempts exist`. This check runs before question validation.
 - **R14**: Allowed when `attemptsUsed < maxAttempts`. The attempt stores `startTime` from the system clock.
 - **R17**: An attempt is expired when `now >= startTime + duration` (exactly at the limit counts as expired). On expiry it is auto-submitted with the answers saved so far. Later answers are rejected with `Time is up - attempt already submitted`.
 - **R18**: `score = earnedPoints / totalPoints × 100`, rounded half-up to 2 decimals. Unanswered questions earn 0.
@@ -218,7 +221,7 @@ And the class average is calculated from all students' best scores
 | R4–R5 | `AuthService.login` |
 | R6–R9 | `QuizService.createQuiz`, `QuizValidator.validate` |
 | R10–R11 | `QuizService.addQuestion`, `QuestionValidator.validate` |
-| R12–R13 | `QuizService.publish`, `QuizService.editQuestion` |
+| R12–R13 | `QuizService.publish`, `QuizService.editQuestion`, `QuizService.deleteQuestion` |
 | R14–R17 | `AttemptService.start`, `AttemptService.submitAnswer`, `AttemptService.checkExpiry` |
 | R18–R19 | `GradingService.calculateScore`, `GradingService.passFail`, `GradingService.letterGrade` |
 | R20 | `ReportService.bestScore`, `ReportService.classAverage` |

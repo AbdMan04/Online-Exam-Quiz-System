@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Question')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card narrow">
+    <p><a th:href="@{/instructor/quizzes/{id}(id=${quiz.id})}" th:text="'← ' + ${quiz.title}">&larr; Quiz</a></p>
+    <h1>Question</h1>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+    <form th:action="@{${formAction}}" th:object="${questionForm}" method="post">
+        <label>Question text
+            <input type="text" th:field="*{text}" required autofocus>
+        </label>
+        <label>Points
+            <input type="number" th:field="*{points}" required>
+            <small class="muted">1-10 points.</small>
+        </label>
+        <fieldset>
+            <legend>Options <small class="muted">(fill 2-5, select exactly one correct answer)</small></legend>
+            <div class="option-row" th:each="option, row : *{options}">
+                <input type="radio" th:field="*{correctIndex}" th:value="${row.index}"
+                       th:title="'Option ' + ${row.count} + ' is correct'">
+                <input type="text" th:field="*{options[__${row.index}__]}"
+                       th:placeholder="'Option ' + ${row.count}">
+            </div>
+        </fieldset>
+        <button type="submit" class="btn">Save question</button>
+    </form>
+</main>
+</body>
+</html>

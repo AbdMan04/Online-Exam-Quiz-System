@@ -6,7 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 /**
- * R4: role-specific landing pages. Access is guarded by {@link RoleInterceptor}.
+ * R4: student landing page (the instructor dashboard lives in {@link InstructorController}).
+ * Access is guarded by {@link RoleInterceptor}.
  */
 @Controller
 public class DashboardController {
@@ -15,11 +16,5 @@ public class DashboardController {
     public String studentDashboard(@SessionAttribute(SessionUser.SESSION_KEY) SessionUser user, Model model) {
         model.addAttribute("user", user);
         return "student/dashboard";
-    }
-
-    @GetMapping("/instructor/dashboard")
-    public String instructorDashboard(@SessionAttribute(SessionUser.SESSION_KEY) SessionUser user, Model model) {
-        model.addAttribute("user", user);
-        return "instructor/dashboard";
     }
 }

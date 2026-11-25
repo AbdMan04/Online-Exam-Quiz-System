@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${quiz.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: navbar(${user})}"></header>
+<main class="card">
+    <p><a th:href="@{/instructor/dashboard}">&larr; My quizzes</a></p>
+    <div class="title-row">
+        <h1>
+            <span th:text="${quiz.title}">Java Basics</span>
+            <span class="badge" th:classappend="${quiz.published} ? 'badge-green' : 'badge-grey'"
+                  th:text="${quiz.status}" id="status">DRAFT</span>
+        </h1>
+        <form th:unless="${quiz.published}" th:action="@{/instructor/quizzes/{id}/publish(id=${quiz.id})}"
+              method="post" class="inline">
+            <button type="submit" class="btn">Publish</button>
+        </form>
+    </div>
+
+    <p class="alert success" th:if="${message}" th:text="${message}" id="message"></p>
+    <p class="alert error" th:if="${error}" th:text="${error}" id="error"></p>
+    <p class="alert info" th:if="${locked}">
+        Students have attempted this quiz, so its questions can no longer be changed.
+    </p>
+
+    <dl class="facts">
+        <div><dt>Duration</dt><dd th:text="${quiz.durationMinutes} + ' min'">30 min</dd></div>
+        <div><dt>Passing score</dt><dd th:text="${quiz.passingScore} + ' %'">60 %</dd></div>
+        <div><dt>Max attempts</dt><dd th:text="${quiz.maxAttempts}">2</dd></div>
+        <div><dt>Total points</dt><dd th:text="${quiz.totalPoints}">0</dd></div>
+    </dl>
+
+    <div class="title-row">
+        <h2 th:text="'Questions (' + ${quiz.questionCount} + ')'">Questions (0)</h2>
+        <a class="btn" th:unless="${locked}"
+           th:href="@{/instructor/quizzes/{id}/questions/new(id=${quiz.id})}">+ Add question</a>
+    </div>
+
+    <p class="muted" th:if="${quiz.questionCount == 0}">No questions yet. Add at least one before publishing.</p>
+
+    <ol class="questions">
+        <li th:each="question : ${quiz.questions}" class="question">
+            <div class="question-head">
+                <strong th:text="${question.text}">What is the JVM?</strong>
+                <span class="muted" th:text="${question.points} + ' pt'">5 pt</span>
+            </div>
+            <ul class="options">
+                <li th:each="option : ${question.options}" th:classappend="${option.correct} ? 'correct'">
+                    <span th:text="${option.text}">Option</span>
+                    <span th:if="${option.correct}" class="badge badge-green">correct</span>
+                </li>
+            </ul>
+            <div class="question-actions" th:unless="${locked}">
+                <a th:href="@{/instructor/questions/{id}/edit(id=${question.id})}">Edit</a>
+                <form th:action="@{/instructor/questions/{id}/delete(id=${question.id})}" method="post" class="inline"
+                      onsubmit="return confirm('Delete this question?');">
+                    <button type="submit" class="link-button">Delete</button>
+                </form>
+            </div>
+        </li>
+    </ol>
+</main>
+</body>
+</html>

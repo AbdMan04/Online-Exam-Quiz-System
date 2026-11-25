@@ -21,6 +21,15 @@ public final class Messages {
     public static final String INVALID_QUESTION = "Invalid question configuration";
     public static final String QUIZ_NEEDS_QUESTION = "Quiz needs at least 1 question";
     public static final String QUIZ_LOCKED = "Quiz cannot be modified after attempts exist";
+    public static final String QUIZ_ALREADY_PUBLISHED = "Quiz is already published";
+    public static final String QUIZ_NOT_FOUND = "Quiz not found";
+    public static final String QUESTION_NOT_FOUND = "Question not found";
+
+    public static final String QUIZ_CREATED = "Quiz created";
+    public static final String QUESTION_ADDED = "Question added";
+    public static final String QUESTION_UPDATED = "Question updated";
+    public static final String QUESTION_DELETED = "Question deleted";
+    public static final String QUIZ_PUBLISHED = "Quiz published";
 
     public static final String NO_ATTEMPTS_LEFT = "No attempts remaining";
     public static final String QUIZ_NOT_AVAILABLE = "Quiz not available";
