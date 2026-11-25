@@ -21,11 +21,20 @@ import java.util.stream.Stream;
  */
 public class TestTableWriter implements AutoCloseable {
 
-    static final Path OUTPUT_DIR = Path.of("target", "test-tables");
+    static final Path DEFAULT_OUTPUT_DIR = Path.of("target", "test-tables");
     private static final String HEADER = "| Test Case ID | Input condition | Input | Actual output | Expected output | Pass/Fail |";
     private static final String DIVIDER = "|---|---|---|---|---|---|";
 
+    private final Path outputDir;
     private final List<TestCaseRow> rows = new ArrayList<>();
+
+    public TestTableWriter() {
+        this(DEFAULT_OUTPUT_DIR);
+    }
+
+    TestTableWriter(Path outputDir) {
+        this.outputDir = outputDir;
+    }
 
     synchronized void add(TestCaseRow row) {
         rows.add(row);
@@ -35,9 +44,9 @@ public class TestTableWriter implements AutoCloseable {
     public synchronized void close() {
         List<TestCaseRow> sorted = rows.stream().sorted(TestCaseRow.REPORT_ORDER).toList();
         try {
-            Files.createDirectories(OUTPUT_DIR);
-            Files.writeString(OUTPUT_DIR.resolve("test-cases.md"), toMarkdown(sorted), StandardCharsets.UTF_8);
-            Files.writeString(OUTPUT_DIR.resolve("test-cases.csv"), toCsv(sorted), StandardCharsets.UTF_8);
+            Files.createDirectories(outputDir);
+            Files.writeString(outputDir.resolve("test-cases.md"), toMarkdown(sorted), StandardCharsets.UTF_8);
+            Files.writeString(outputDir.resolve("test-cases.csv"), toCsv(sorted), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new UncheckedIOException("Could not write test tables", e);
         }
