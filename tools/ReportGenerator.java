@@ -71,6 +71,7 @@ public class ReportGenerator {
         html.append(cover(info));
         html.append(contents(requirements));
         html.append(overview(requirements, rows, counts));
+        html.append(specification(read("docs/requirements.md")));
         html.append(coverageSection(classes));
         html.append(defects(read("docs/defects.md")));
         for (Requirement requirement : requirements) {
@@ -253,6 +254,8 @@ public class ReportGenerator {
                   figure { margin: 10px 0; break-inside: avoid; } figure img { max-width: 100%%; border: 1px solid #b9c0cf; }
                   figcaption { font-style: italic; font-size: 9pt; }
                   ul.toc { columns: 2; font-size: 9.5pt; }
+                  ul.spec li { margin-bottom: 5px; font-size: 9.5pt; }
+                  a { color: inherit; text-decoration: none; }
                 </style></head><body>
                 """.formatted(escape(title));
     }
@@ -281,7 +284,10 @@ public class ReportGenerator {
 
     private static String contents(List<Requirement> requirements) {
         StringBuilder html = new StringBuilder("<div class=\"page\"><h1>Contents</h1><ol>"
-                + "<li><a href=\"#overview\">Overview</a></li><li><a href=\"#coverage\">Code coverage</a></li>"
+                + "<li><a href=\"#overview\">Overview</a></li>"
+                + "<li><a href=\"#specification\">Specification details: rules, messages, clarifications, "
+                + "function map</a></li>"
+                + "<li><a href=\"#coverage\">Code coverage</a></li>"
                 + "<li><a href=\"#defects\">Defects found by testing</a></li>"
                 + "<li>Requirements and test cases<ul class=\"toc\">");
         for (Requirement r : requirements) {
@@ -298,7 +304,8 @@ public class ReportGenerator {
                 <div class="page" id="overview"><h1>1. Overview</h1>
                 <p>The <b>Online Exam/Quiz System</b> is a web application (Java 17, Spring Boot, Thymeleaf, MySQL) in which
                 instructors create, publish and grade timed multiple-choice quizzes and students take them. Its behaviour is
-                specified by 20 requirements written in Gherkin (Given / When / Then), shown in section 4.</p>
+                specified by 20 requirements written in Gherkin (Given / When / Then), shown in section 5; the exact rules
+                and messages behind them are listed in section 2.</p>
                 <h3>How the test cases were produced</h3>
                 <ul>
                   <li><b>Black-box (tables n-1 and n-2):</b> equivalence partitions and 2-value boundary analysis
@@ -357,7 +364,7 @@ public class ReportGenerator {
             sums[3] += c.branchesTotal();
         }
 
-        StringBuilder html = new StringBuilder("<div class=\"page\" id=\"coverage\"><h1>2. Code coverage</h1>");
+        StringBuilder html = new StringBuilder("<div class=\"page\" id=\"coverage\"><h1>3. Code coverage</h1>");
         html.append("<p>Measured with JaCoCo while running the complete JUnit test suite (statement coverage = line "
                 + "coverage, branch coverage = every outcome of every decision).</p>");
         html.append("<div class=\"stats\">")
@@ -411,7 +418,7 @@ public class ReportGenerator {
     }
 
     private static String defects(String markdown) {
-        StringBuilder html = new StringBuilder("<div class=\"page\" id=\"defects\"><h1>3. Defects found by testing</h1>"
+        StringBuilder html = new StringBuilder("<div class=\"page\" id=\"defects\"><h1>4. Defects found by testing</h1>"
                 + "<p>Boundary value analysis found four defects. Each was confirmed by a failing test case, fixed, "
                 + "added to the specification, and the test case now passes.</p><table><thead><tr>"
                 + "<th style=\"width:6%\">ID</th><th style=\"width:17%\">Found by</th><th style=\"width:9%\">Req.</th>"
@@ -467,30 +474,97 @@ public class ReportGenerator {
         return html.append("</div>").toString();
     }
 
+    /** Section 2: rules, messages, clarifications and function map, taken from docs/requirements.md. */
+    private static String specification(String markdown) {
+        return "<div class=\"page\" id=\"specification\"><h1>2. Specification details</h1>"
+                + "<p>These rules, exact messages and decisions complete the Gherkin requirements of section 5. "
+                + "The test cases check the system against exactly these values "
+                + "(source: <code>docs/requirements.md</code>).</p>"
+                + "<h2>2.1 Validation rules and boundary values</h2>"
+                + renderMarkdown(markdownSection(markdown, "1."), "24%", "38%", "38%")
+                + "<h2>2.2 Message catalogue</h2>"
+                + "<p>Every message the system shows when a rule is broken. Tests compare against these exact texts.</p>"
+                + renderMarkdown(markdownSection(markdown, "2."), "25%", "45%", "30%")
+                + "<h2>2.3 Clarifications</h2>"
+                + "<p>Decisions that make each requirement precise enough to test (ordering of checks, rounding, "
+                + "what happens exactly at a limit).</p>"
+                + renderMarkdown(markdownSection(markdown, "3."))
+                + "<h2>2.4 Requirement &rarr; function map</h2>"
+                + "<p>The functions that implement each requirement; they are the subject of the white-box tables.</p>"
+                + renderMarkdown(markdownSection(markdown, "5."), "14%", "86%")
+                + "</div>";
+    }
+
+    /** The lines under the heading "## {number} ..." up to the next "## " heading. */
+    static String markdownSection(String markdown, String number) {
+        StringBuilder section = new StringBuilder();
+        boolean inside = false;
+        for (String line : markdown.split("\n")) {
+            if (line.startsWith("## ")) {
+                inside = line.startsWith("## " + number);
+                continue;
+            }
+            if (inside) {
+                section.append(line).append('\n');
+            }
+        }
+        return section.toString();
+    }
+
     private static String appendix(String markdown) {
-        StringBuilder html = new StringBuilder("<div class=\"page\" id=\"appendix\"><h1>Appendix: JUnit features used</h1>");
+        return "<div class=\"page\" id=\"appendix\"><h1>Appendix: JUnit features used</h1>"
+                + renderMarkdown(markdown) + "</div>";
+    }
+
+    /**
+     * Renders the small Markdown subset used in docs/: "## " headings, "- " bullet lists, tables and paragraphs.
+     * Optional column widths apply to every table in the block.
+     */
+    static String renderMarkdown(String markdown, String... columnWidths) {
+        StringBuilder html = new StringBuilder();
         List<String> tableLines = new ArrayList<>();
+        boolean inList = false;
         for (String line : (markdown + "\n").split("\n")) {
             if (line.startsWith("|")) {
                 tableLines.add(line);
                 continue;
             }
             if (!tableLines.isEmpty()) {
-                html.append(markdownTable(tableLines));
+                html.append(markdownTable(tableLines, columnWidths));
                 tableLines.clear();
             }
-            if (line.startsWith("## ")) {
+            boolean bullet = line.startsWith("- ");
+            if (inList && !bullet) {
+                html.append("</ul>");
+                inList = false;
+            }
+            if (bullet) {
+                html.append(inList ? "" : "<ul class=\"spec\">").append("<li>").append(inline(line.substring(2)))
+                        .append("</li>");
+                inList = true;
+            } else if (line.startsWith("## ")) {
                 html.append("<h3>").append(inline(line.substring(3))).append("</h3>");
             } else if (!line.isBlank() && !line.startsWith("# ")) {
                 html.append("<p>").append(inline(line)).append("</p>");
             }
         }
-        return html.append("</div>").toString();
+        // split() drops trailing empty lines, so a table or list at the very end is still open here
+        if (!tableLines.isEmpty()) {
+            html.append(markdownTable(tableLines, columnWidths));
+        }
+        if (inList) {
+            html.append("</ul>");
+        }
+        return html.toString();
     }
 
-    private static String markdownTable(List<String> lines) {
+    private static String markdownTable(List<String> lines, String... columnWidths) {
         StringBuilder html = new StringBuilder("<table><thead><tr>");
-        markdownCells(lines.get(0)).forEach(cell -> html.append("<th>").append(inline(cell)).append("</th>"));
+        List<String> headers = markdownCells(lines.get(0));
+        for (int i = 0; i < headers.size(); i++) {
+            String width = i < columnWidths.length ? " style=\"width:" + columnWidths[i] + "\"" : "";
+            html.append("<th").append(width).append(">").append(inline(headers.get(i))).append("</th>");
+        }
         html.append("</tr></thead><tbody>");
         for (String line : lines.subList(2, lines.size())) {
             html.append("<tr>");
