@@ -30,15 +30,6 @@ The app uses the `quizdb` database (it is created automatically). The default us
 | Run only white-box tests | `mvnw test -Dgroups=whitebox` |
 | Start the app | `mvnw spring-boot:run` → http://localhost:8080 |
 
-In IntelliJ: right-click `src/test/java` → **Run 'All Tests' with Coverage** for the coverage screenshots.
-
-## The PDF report
-`tools\build-report.cmd` runs all tests and builds `docs/report/SE430-Online-Quiz-System-Test-Report.pdf`:
-the 20 Gherkin requirements with their 80 test case tables (actual outputs and Pass/Fail come from the test run),
-the JaCoCo coverage report, the defect log and the list of JUnit features used.
-- Team names on the cover page: edit `docs/report-info.properties`.
-- Coverage screenshots: put PNG files in `docs/report-screenshots/` (e.g. `1-intellij-coverage.png`); they are embedded automatically.
-- Then run `tools\build-report.cmd` again.
 
 ## Project layout
 ```
