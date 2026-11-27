@@ -1,4 +1,4 @@
-# Online Exam/Quiz System (SE430 Software Testing Project)
+# Online Exam/Quiz System 
 
 A web-based quiz system (Spring Boot + Thymeleaf + MySQL) with 20 BDD requirements, each tested with
 black-box techniques (equivalence partitions and BVA) and white-box techniques (statement and branch coverage) in JUnit 5.
